@@ -10,12 +10,6 @@ import org.apache.spark.sql.Encoders
 
 object PageRank {
 
-  // Creating a case class for defining edges.
-  final case class Graph (
-                          V1:Int,
-                          V2:Int
-                        )
-
   def main(args: Array[String]): Unit = {
     val logger: org.apache.log4j.Logger = LogManager.getRootLogger
 //    if (args.length < 2) {
