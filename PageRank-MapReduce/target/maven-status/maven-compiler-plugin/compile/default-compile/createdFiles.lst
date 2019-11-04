@@ -1,3 +1,6 @@
-fc/FollowerCount.class
-fc/FollowerCount$FollowerMapper.class
-fc/FollowerCount$TotalFollowerReducer.class
+pr/SyntheticGraph.class
+pr/PageRank$RankerReducer.class
+pr/PageRank$COUNTER.class
+pr/PageRank.class
+pr/PageRank$RankerMapper.class
+pr/Vertex.class

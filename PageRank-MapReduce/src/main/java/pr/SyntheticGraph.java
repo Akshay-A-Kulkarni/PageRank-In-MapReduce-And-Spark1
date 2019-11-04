@@ -1,36 +1,53 @@
 package pr;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.directory.shared.kerberos.codec.apRep.actions.ApRepInit;
 
-public class SyntheticGraph{
+import java.io.*;
+import java.util.ArrayList;
+
+
+public class SyntheticGraph {
 
     private int K;
     private ArrayList<Vertex> vertices;
 
-    public SyntheticGraph (int K){
+    public SyntheticGraph(int K) {
         this.K = K;
         this.vertices = new ArrayList<Vertex>();
     }
 
-    private void vertexSetGenerator(){
-        float k_sq = this.K * this.K;
-        for (Integer i = 1; i <= k_sq ; i++) {
-            if( i % this.K != 0 ){
-                Vertex v = new Vertex(i);
-                v.addToAdjacencyList(i+1);
-                v.setPR(1.0/k_sq);
-                this.vertices.add(v);
+
+    private ArrayList<Vertex> vertexSetGenerator() {
+        int k_sq = this.K * this.K;
+        for (Integer i = 1; i <= k_sq; i++) {
+            if (i % this.K != 0) {
+                Vertex v1 = new Vertex();
+                v1.setVertex(i);
+                v1.setPR(1.0 / k_sq);
+                v1.appendToAdjacencyList((i+1));
+                this.vertices.add(v1);
             }
             else {
-                Vertex v = new Vertex(i);
-                v.addToAdjacencyList(0);
-                v.setPR(1.0/k_sq);
-                this.vertices.add(v);
+                Vertex v2 = new Vertex();
+                v2.setVertex(i);
+                v2.setPR(1.0 / k_sq);
+                v2.appendToAdjacencyList(0);
+                this.vertices.add(v2);
+
             }
         }
+        return this.vertices;
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        ArrayList<Vertex> g = new SyntheticGraph(1000).vertexSetGenerator();
+        PrintWriter writer = new PrintWriter("input/input.txt", "UTF-8");
+
+        for(Vertex v : g){
+            writer.println(v.serializeToString());
+            }
+        writer.close();
+
     }
 }

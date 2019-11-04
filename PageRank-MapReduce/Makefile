@@ -4,7 +4,7 @@
 # Customize these paths for your environment.
 # -----------------------------------------------------------
 hadoop.root=/home/akshay/hadoop-2.9.2
-jar.name=mr-demo-1.0.jar
+jar.name=pr-MapReduce-1.0.jar
 jar.path=target/${jar.name}
 job.name=pr.PageRank
 local.input=input
@@ -13,6 +13,7 @@ local.output=output
 hdfs.user.name=akshay
 hdfs.input=input
 hdfs.output=output
+num.iter = 10
 # AWS EMR Execution
 aws.emr.release=emr-5.17.0
 aws.region=us-east-1
@@ -84,12 +85,12 @@ download-output-hdfs: clean-local-output
 # Make sure Hadoop  is set up (in /etc/hadoop files) for pseudo-clustered operation (not standalone).
 # https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/SingleCluster.html#Pseudo-Distributed_Operation
 pseudo: jar stop-yarn format-hdfs init-hdfs upload-input-hdfs start-yarn clean-local-output 
-	${hadoop.root}/bin/hadoop jar ${jar.path} ${job.name} ${hdfs.input} ${hdfs.output}
+	${hadoop.root}/bin/hadoop jar ${jar.path} ${job.name} ${hdfs.input} ${hdfs.output} ${num.iter}
 	make download-output-hdfs
 
 # Runs pseudo-clustered (quickie).
 pseudoq: jar clean-local-output clean-hdfs-output 
-	${hadoop.root}/bin/hadoop jar ${jar.path} ${job.name} ${hdfs.input} ${hdfs.output}
+	${hadoop.root}/bin/hadoop jar ${jar.path} ${job.name} ${hdfs.input} ${hdfs.output} ${num.iter}
 	make download-output-hdfs
 
 # Create S3 bucket.

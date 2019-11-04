@@ -1,49 +1,95 @@
 package pr;
 
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.io.Writable;
+
 import java.io.*;
 import java.util.ArrayList;
 
-public class Vertex implements Serializable {
-    private final Integer  Vertex_ID;
+public class Vertex implements Writable {
+    private Integer  Vertex_ID;
     private Double Vertex_PR;
     private ArrayList<Integer> adjVertices;
+    private int adjSize;
+    boolean fullVertexFlag;
 
-    public Vertex (int  Vertex_ID)  {
-        this.Vertex_ID = Vertex_ID;
-        this.adjVertices = new ArrayList<>();
+    public Vertex ()  {
+        this.Vertex_ID = null;
+        this.Vertex_PR = 1.0; // init value
+        this.adjVertices = new ArrayList<Integer>();
+        this.adjSize = this.adjVertices.size();
+        this.fullVertexFlag = true;
     }
-
+    @Override
+    public void readFields(DataInput in) throws IOException{
+        this.Vertex_ID  = in.readInt();
+        this.Vertex_PR = in.readDouble();
+        this.fullVertexFlag = in.readBoolean();
+        if (this.fullVertexFlag) {
+            this.adjSize = in.readInt();
+            ArrayList<Integer> temp = new ArrayList<>();
+            for (int i = 0; i < this.adjSize; i++) {
+                temp.add(in.readInt());
+            }
+            this.adjVertices = temp;
+        }
+    }
+    @Override
+    public void write(DataOutput out) throws IOException{
+        out.writeInt(this.Vertex_ID);
+        out.writeDouble(this.Vertex_PR);
+        out.writeBoolean(this.fullVertexFlag);
+        if (this.fullVertexFlag) {
+            out.writeInt(this.adjSize);
+            for (int i = 0; i < this.adjSize; i++) {
+                out.writeInt(this.adjVertices.get(i));
+            }
+        }
+    }
+    public void setVertex(int input){
+        this.Vertex_ID = input;
+    }
+    public Integer getVertex(){
+        return this.Vertex_ID;
+    }
     public void setPR(Double input){
         this.Vertex_PR = input;
+    }
+    public void appendToAdjacencyList(Integer A){
+        this.adjVertices.add(A);
+        this.adjSize = this.adjVertices.size();
+    }
+    public void setflag(boolean i){
+        this.fullVertexFlag = i;
     }
     public Double getPR(){
         return this.Vertex_PR;
     }
+    public boolean getflag(){
+        return this.fullVertexFlag;
+    }
     public ArrayList<Integer> getAdjacencyList(){
         return this.adjVertices;
     }
-    public void addToAdjacencyList(int Vertex){
-        this.adjVertices.add(Vertex);
+    public Integer getAdjacencySize(){
+        return this.adjVertices.size();
     }
-
     public String serializeToString(){
         return "#"+this.Vertex_ID.toString()+"@"+ this.Vertex_PR.toString()+"@"+this.adjVertices.toString()+"#";
     }
-
-    public Vertex deserializeFromString(String in){
-        final String[] values  = in.replaceAll("[#]", "").split("@");
-        int v = Integer.parseInt(values[0]);
-        double pr = Double.parseDouble(values[1]);
-
-        Vertex output = new Vertex(v);
-        output.setPR(pr);
-
+    public void deserializeFromString(String in){
+        String value = in.trim();
+        final String[] values  = value.replaceAll("[#]", "").split("@");
         final String[] adj = values[2].replaceAll("[\\[\\]]","").split(",");
+        final ArrayList<Integer> adj_i= new ArrayList<>();
         for (String s:adj) {
-            output.addToAdjacencyList(Integer.parseInt(s));
+            adj_i.add(Integer.parseInt(s));
         }
 
-        return output;
+        this.Vertex_ID = Integer.parseInt(values[0]);
+        this.Vertex_PR = Double.parseDouble(values[1]);
+        this.adjVertices = adj_i;
+        this.adjSize = adj_i.size();
     }
 
     @Override
@@ -62,70 +108,4 @@ public class Vertex implements Serializable {
         return "Vertex Object Id: "+ this.Vertex_ID + " | Current PageRank Value: " + this.Vertex_PR + "[Note: use .serializeToString to get the full object as a parsable string]";
     }
 
-    public static void main(String[] args) {
-
-        Vertex v = new Vertex(1);
-        v.addToAdjacencyList(2);
-        v.setPR(2.595);
-
-
-        String out = v.serializeToString();
-
-        System.out.println(out);
-        Vertex test = v.deserializeFromString(out);
-
-        System.out.println(test.serializeToString());
-//        try
-//        {
-//            //Saving of object in a file
-//            FileOutputStream file = new FileOutputStream("ser_test.ser");
-//            ObjectOutputStream out = new ObjectOutputStream(file);
-//
-//            // Method for serialization of object
-//            out.writeObject(v);
-//
-//            out.close();
-//            file.close();
-//
-//            System.out.println("Object has been serialized");
-//
-//        }
-//
-//        catch(IOException ex)
-//        {
-//            System.out.println("IOException is caught");
-//        }
-//
-//
-//        Vertex object1 = null;
-
-        // Deserialization
-//        try
-//        {
-//            // Reading the object from a file
-//            FileInputStream file = new FileInputStream("ser_test.ser");
-//            ObjectInputStream in = new ObjectInputStream(file);
-//
-//            // Method for deserialization of object
-//            object1 = (Vertex) in.readObject();
-//
-//            in.close();
-//            file.close();
-//
-//            System.out.println("Object has been deserialized ");
-//            System.out.println("a = " + object1.a);
-//            System.out.println("b = " + object1.b);
-//        }
-//
-//        catch(IOException ex)
-//        {
-//            System.out.println("IOException is caught");
-//        }
-//
-//        catch(ClassNotFoundException ex)
-//        {
-//            System.out.println("ClassNotFoundException is caught");
-//        }
-
-    }
 }
