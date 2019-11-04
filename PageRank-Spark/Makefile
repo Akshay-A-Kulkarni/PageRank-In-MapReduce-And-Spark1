@@ -5,8 +5,8 @@
 spark.root=/home/akshay/spark-2.3.4-bin-without-hadoop
 hadoop.root=/home/akshay/hadoop-2.9.2
 app.name=PageRank
-jar.name=spark-pr.jar
-maven.jar.name=spark-pr-1.0.jar
+jar.name=pr-spark.jar
+maven.jar.name=pr-spark-1.0.jar
 job.name=pr.PageRank
 local.master=local[4]
 local.input=input

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class
 PageRank extends Configured implements Tool {
 
-    private static Double bigNum = Math.pow(10D,10D);
+    private static Double bigNum = Math.pow(10D,15D);
 
     public enum COUNTER {
         SinkMass,
@@ -94,7 +94,7 @@ PageRank extends Configured implements Tool {
                 }
             }
 
-            Double sink_dist = (countval/4)*(1/bigNum);
+            Double sink_dist = (countval/1000*1000*bigNum);
 
             logger.error(sink_dist.toString());
 
@@ -126,7 +126,7 @@ PageRank extends Configured implements Tool {
             job.setReducerClass(RankerReducer.class);
             job.setOutputKeyClass(IntWritable.class);
             job.setOutputValueClass(Vertex.class);
-            job.getConfiguration().setInt("mapreduce.input.lineinputformat.linespermap", 2);
+            job.getConfiguration().setInt("mapreduce.input.lineinputformat.linespermap", 1000);
             if (iter == 0) {
                 NLineInputFormat.addInputPath(job, new Path(args[0]));
             }

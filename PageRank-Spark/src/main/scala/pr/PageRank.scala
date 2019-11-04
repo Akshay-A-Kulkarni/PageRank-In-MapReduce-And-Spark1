@@ -31,17 +31,14 @@ object PageRank {
 
     val partitioner = new HashPartitioner(1)
 
-    val k = 2
+    val k = 100
     // creating graph rdd
     val graph = spark.sparkContext.parallelize(generateGraph(k))
                                   .partitionBy(partitioner).persist()
 
     val sink = spark.sparkContext.parallelize(List((0,0.0))).partitionBy(partitioner)
 
-
     val adj_graph = graph.groupByKey()
-
-
     // Initialize each page's rank;
     // Use of mapValues ensure similar partitioning
     var ranks = adj_graph.mapValues(v => 1.0/(k*k).toDouble).persist()
@@ -52,11 +49,8 @@ object PageRank {
     val num_nodes = adj_graph.count()
     var dist_pr:Double = 0.0
 
-//    var temp= spark.sparkContext.parallelize(List((0,0.0))).partitionBy(partitioner)
-
-
     //   Run 10 iterations of PageRank
-     for (i <- 1 until 11) {
+     for (i <- 1 until 4) {
        var contributions = adj_graph.join(ranks).flatMap{
          case (v1, (v2, rank)) => v2.map(p => (p, rank / v2.size))
        }
@@ -71,12 +65,10 @@ object PageRank {
        logger.error(dist_pr.toString+ "iter: " +  i.toString)
        // transferred_ranks.saveAsTextFile("ranks"+i)
        ranks = transferred_ranks.mapValues(v => 0.15/num_nodes + 0.85D*(dist_pr+v))
-       ranks.saveAsTextFile("ranks"+i)
-
-
      }
-    // Write out the final ranks
-//    ranks.saveAsTextFile("ranks")
+     logger.info("++++++++++++++++++< DebugString >++++++++++++++++++")
+     logger.info(ranks.toDebugString)
+     ranks.sortBy(_._1, true,numPartitions = 1).saveAsTextFile("ranks")
 
   }
 
