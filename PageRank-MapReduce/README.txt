@@ -1,7 +1,6 @@
-Hadoop MapReduce FollowerCount 
-HW1 for CS6240
-Fall 2019
-by Akshay kulkarni
+Author:
+
+Akshay kulkarni
 
 Installation
 ------------
