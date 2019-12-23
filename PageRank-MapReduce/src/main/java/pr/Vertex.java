@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Vertex implements Writable {
-    private Integer  Vertex_ID;
+    private Integer Vertex_ID;
     private Double Vertex_PR;
     private ArrayList<Integer> adjVertices;
     private int adjSize;
